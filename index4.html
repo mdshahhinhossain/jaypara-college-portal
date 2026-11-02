@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জয়পাড়া কলেজ পোস্ট পোর্টাল</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Futuristic Glassmorphism Effects */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .neon-glow-btn {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-glow-btn:hover {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.7);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="glass-header sticky top-0 z-40 shadow-xl">
+        <div class="max-w-5xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-400 text-xl shadow-inner">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent tracking-wide">
+                        জয়পাড়া কলেজ পোস্ট পোর্টাল
+                    </h1>
+                </div>
+            </div>
+            
+            <div id="authNav" class="flex items-center space-x-3">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+        
+        <!-- Logged In Admin Status Bar -->
+        <div id="userBar" class="hidden mb-8 glass-card rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="relative cursor-pointer" onclick="viewLargeImage(this.querySelector('img').src)">
+                    <img id="activeUserAvatar" src="" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover hidden shadow-md hover:scale-105 transition">
+                    <div id="activeUserAvatarFallback" class="w-10 h-10 rounded-full bg-indigo-950 border border-indigo-500 flex items-center justify-center text-indigo-400">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs text-indigo-300 flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> অ্যাক্টিভ সেশন
+                    </div>
+                    <span class="text-sm font-medium text-slate-200">স্বাগতম, <strong id="activeNameText" class="text-indigo-400 font-bold">--</strong></span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button id="openCreatePostBtn" onclick="openPostModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl font-medium transition flex items-center gap-2 neon-glow-btn">
+                    <i class="fa-solid fa-plus"></i> নতুন পোস্ট করুন
+                </button>
+                <button id="superAdminSettingsBtn" onclick="openSubAdminModal()" class="hidden bg-purple-600 hover:bg-purple-500 text-white text-sm px-4 py-2 rounded-xl font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i> সাব-অ্যাডমিন
+                </button>
+                <button onclick="openProfileModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm px-3.5 py-2 rounded-xl font-medium border border-slate-700 transition" title="Edit Profile">
+                    <i class="fa-solid fa-user-pen"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Feed Section -->
+        <section class="w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg md:text-xl font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-indigo-400"></i> সাম্প্রতিক আপডেটসমূহ
+                </h2>
+                <span id="postCountBadge" class="bg-indigo-950/80 border border-indigo-500/30 text-indigo-300 text-xs font-semibold px-3 py-1 rounded-full">০ টি পোস্ট</span>
+            </div>
+
+            <!-- Posts Feed -->
+            <div id="postsFeed" class="space-y-6"></div>
+
+            <!-- Empty Feed State -->
+            <div id="emptyFeedState" class="hidden text-center py-16 glass-card rounded-2xl">
+                <i class="fa-regular fa-folder-open text-5xl text-slate-600 mb-3"></i>
+                <p class="text-slate-400 font-medium">এখনো কোনো পোস্ট করা হয়নি।</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Permanent Futuristic Footer with Border -->
+    <footer class="glass-header border-t-2 border-indigo-500/80 py-5 mt-12 shadow-2xl">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-lg font-bold bg-gradient-to-r from-indigo-300 via-white to-indigo-300 bg-clip-text text-transparent tracking-wide">
+                জয়পাড়া বিশ্ববিদ্যালয় কলেজ শাখা ছাত্রদল
+            </p>
+            <p class="text-xs text-slate-400 mt-1.5 font-light">
+                &copy; ২০২৬ জয়পাড়া কলেজ পোস্ট পোর্টাল | সর্বস্বত্ব সংরক্ষিত
+            </p>
+        </div>
+    </footer>
+
+    <!-- MODALS & LIGHTBOX -->
+
+    <!-- IMAGE LIGHTBOX / FULLSCREEN VIEWER -->
+    <div id="imageViewerModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex justify-center items-center hidden p-4 transition-all">
+        <button onclick="closeModal('imageViewerModal')" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 p-3 rounded-full w-12 h-12 flex items-center justify-center transition border border-slate-600 z-50">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+        <div class="max-w-3xl max-h-[85vh] p-2 flex justify-center items-center">
+            <img id="modalFullImage" src="" alt="Full Preview" class="max-w-full max-h-[80vh] rounded-2xl border border-indigo-500/40 shadow-2xl object-contain">
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex justify-center items-center hidden p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-right-to-bracket text-indigo-400"></i> অ্যাডমিন লগইন
+            </h3>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">ইউজারনেম (Username)</label>
+                    <input type="text" id="loginUsername" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="ইউজারনেম দিন">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">পাসওয়ার্ড (Password)</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="পাসওয়ার্ড দিন">
+                </div>
+                <div id="loginError" class="text-rose-400 text-xs hidden">ইউজারনেম বা পাসওয়ার্ড ভুল হয়েছে!</div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition neon-glow-btn">লগইন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE/EDIT POST MODAL -->
+    <div id="postModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex justify-center items-center hidden p-4">
+        <div class="glass-card rounded-2xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+            <button onclick="closeModal('postModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 id="postModalTitle" class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-indigo-400"></i> নতুন পোস্ট লিখুন
+            </h3>
+            <form id="postForm" onsubmit="handlePostSubmit(event)" class="space-y-4">
+                <input type="hidden" id="editPostId" value="">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">পোস্ট টাইটেল *</label>
+                    <input type="text" id="postTitle" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="শিরোনাম">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">গ্যালারি থেকে ছবি সিলেক্ট করুন (ঐচ্ছিক)</label>
+                    <input type="file" id="postImageFile" accept="image/*" class="w-full px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">পোস্টের বিবরণ *</label>
+                    <textarea id="postContent" rows="5" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="বিবরণ লিখুন..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('postModal')" class="px-4 py-2 border border-slate-700 rounded-xl text-slate-300 hover:bg-slate-800">বাতিল</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium neon-glow-btn">পাবলিশ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUB-ADMIN MANAGEMENT MODAL -->
+    <div id="subAdminModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex justify-center items-center hidden p-4">
+        <div class="glass-card rounded-2xl max-w-xl w-full p-6 relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+            <button onclick="closeModal('subAdminModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-users-gear text-purple-400"></i> সাব-অ্যাডমিন প্যানেল
+            </h3>
+            
+            <form id="createSubAdminForm" onsubmit="handleCreateSubAdmin(event)" class="bg-slate-900/80 p-4 rounded-xl border border-slate-700 mb-6 space-y-3">
+                <h4 class="text-xs font-bold text-purple-300 border-b border-slate-800 pb-1.5">নতুন সাব-অ্যাডমিন যোগ করুন</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">নাম *</label>
+                        <input type="text" id="newSubName" required class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-slate-200" placeholder="নাম">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">ইউজারনেম *</label>
+                        <input type="text" id="newSubUsername" required class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-slate-200" placeholder="username">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">পাসওয়ার্ড *</label>
+                        <input type="password" id="newSubPassword" required class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-slate-200" placeholder="password">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">গ্যালারি থেকে প্রোফাইল ছবি (ঐচ্ছিক)</label>
+                        <input type="file" id="newSubAvatarFile" accept="image/*" class="w-full px-2 py-1 text-[11px] bg-slate-950 border border-slate-700 rounded-lg text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-purple-600 file:text-white">
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition">তৈরি করুন</button>
+                </div>
+            </form>
+
+            <h4 class="text-xs font-bold text-slate-400 mb-2">সাব-অ্যাডমিন তালিকা:</h4>
+            <div id="subAdminList" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex justify-center items-center hidden p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeModal('profileModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-indigo-400"></i> প্রোফাইল সম্পাদনা
+            </h3>
+            <form id="profileForm" onsubmit="handleProfileUpdate(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">আপনার নাম</label>
+                    <input type="text" id="profileName" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200">
+                </div>
+                <div id="profileUsernameField" class="hidden">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">ইউজারনেম (Username)</label>
+                    <input type="text" id="profileUsername" class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">গ্যালারি থেকে প্রোফাইল ছবি (ঐচ্ছিক)</label>
+                    <input type="file" id="profileAvatarFile" accept="image/*" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-300 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:bg-indigo-600 file:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">পাসওয়ার্ড (Password)</label>
+                    <input type="password" id="profilePassword" required class="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200" placeholder="নতুন পাসওয়ার্ড দিন">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition neon-glow-btn">আপডেট</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const DEFAULT_SUPER_ADMIN = {
+            id: 'super_01',
+            username: 'superadmin',
+            password: 'Mnbvcxzl@123456',
+            name: 'Mother Admin',
+            avatar: '',
+            role: 'SUPER_ADMIN'
+        };
+
+        const STORAGE_KEY_POSTS = 'blog_futuristic_posts_v5';
+        const STORAGE_KEY_USERS = 'blog_futuristic_subadmins_v5';
+        const STORAGE_KEY_SUPER = 'blog_futuristic_superadmin_v5';
+        const STORAGE_KEY_CURRENT_USER = 'blog_futuristic_active_user_v5';
+        const STORAGE_KEY_SAVED_COMMENTER = 'blog_saved_commenter_name';
+
+        let superAdmin = JSON.parse(localStorage.getItem(STORAGE_KEY_SUPER)) || DEFAULT_SUPER_ADMIN;
+        let subAdmins = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS)) || [];
+        let posts = JSON.parse(localStorage.getItem(STORAGE_KEY_POSTS)) || [
+            {
+                id: 'post_1',
+                title: 'জয়পাড়া কলেজ পোস্ট পোর্টাল এ আপনাদের স্বাগতম!',
+                content: 'আমাদের পোর্টালে এখন যেকোনো পোস্ট বা প্রোফাইলে সরাসরি গ্যালারি থেকে ছবি সিলেক্ট করতে পারবেন।',
+                imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
+                authorName: 'Shahin',
+                authorUsername: 'superadmin',
+                authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+                timestamp: Date.now() - 3600000,
+                likes: 24,
+                comments: []
+            }
+        ];
+
+        let currentUser = JSON.parse(localStorage.getItem(STORAGE_KEY_CURRENT_USER)) || null;
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY_SUPER, JSON.stringify(superAdmin));
+            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(subAdmins));
+            localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(posts));
+            if (currentUser) {
+                localStorage.setItem(STORAGE_KEY_CURRENT_USER, JSON.stringify(currentUser));
+            } else {
+                localStorage.removeItem(STORAGE_KEY_CURRENT_USER);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            saveData();
+            renderNav();
+            renderUserBar();
+            renderPosts();
+        });
+
+        // Convert File to Base64 (Gallery Helper)
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function viewLargeImage(imgSrc) {
+            if (!imgSrc) return;
+            document.getElementById('modalFullImage').src = imgSrc;
+            openModal('imageViewerModal');
+        }
+
+        function getAuthorAvatar(authorUsername, fallbackAvatar = '') {
+            if (authorUsername === superAdmin.username) return superAdmin.avatar || '';
+            const sub = subAdmins.find(s => s.username === authorUsername);
+            return sub ? (sub.avatar || '') : fallbackAvatar;
+        }
+
+        function renderNav() {
+            const authNav = document.getElementById('authNav');
+            if (currentUser) {
+                authNav.innerHTML = `
+                    <button onclick="handleLogout()" class="text-xs bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 font-medium px-3.5 py-1.5 rounded-xl border border-rose-800/50 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i> লগআউট
+                    </button>
+                `;
+            } else {
+                authNav.innerHTML = `
+                    <button onclick="openModal('loginModal')" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-1.5 rounded-xl transition flex items-center gap-1.5 neon-glow-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> অ্যাডমিন লগইন
+                    </button>
+                `;
+            }
+        }
+
+        function renderUserBar() {
+            const userBar = document.getElementById('userBar');
+            const activeNameText = document.getElementById('activeNameText');
+            const activeUserAvatar = document.getElementById('activeUserAvatar');
+            const activeUserAvatarFallback = document.getElementById('activeUserAvatarFallback');
+            const superAdminSettingsBtn = document.getElementById('superAdminSettingsBtn');
+
+            if (currentUser) {
+                userBar.classList.remove('hidden');
+                activeNameText.textContent = currentUser.name;
+                
+                const avatarUrl = currentUser.role === 'SUPER_ADMIN' ? superAdmin.avatar : (subAdmins.find(s => s.id === currentUser.id)?.avatar || '');
+                if (avatarUrl) {
+                    activeUserAvatar.src = avatarUrl;
+                    activeUserAvatar.classList.remove('hidden');
+                    activeUserAvatarFallback.classList.add('hidden');
+                } else {
+                    activeUserAvatar.classList.add('hidden');
+                    activeUserAvatarFallback.classList.remove('hidden');
+                }
+
+                if (currentUser.role === 'SUPER_ADMIN') {
+                    superAdminSettingsBtn.classList.remove('hidden');
+                } else {
+                    superAdminSettingsBtn.classList.add('hidden');
+                }
+            } else {
+                userBar.classList.add('hidden');
+            }
+        }
+
+        function renderPosts() {
+            const postsFeed = document.getElementById('postsFeed');
+            const emptyFeedState = document.getElementById('emptyFeedState');
+            const postCountBadge = document.getElementById('postCountBadge');
+
+            postCountBadge.textContent = `${posts.length} টি পোস্ট`;
+
+            if (posts.length === 0) {
+                postsFeed.innerHTML = '';
+                emptyFeedState.classList.remove('hidden');
+                return;
+            }
+
+            emptyFeedState.classList.add('hidden');
+            const sortedPosts = [...posts].sort((a, b) => b.timestamp - a.timestamp);
+            const savedCommenterName = localStorage.getItem(STORAGE_KEY_SAVED_COMMENTER) || '';
+
+            postsFeed.innerHTML = sortedPosts.map(post => {
+                const canEdit = currentUser && (currentUser.role === 'SUPER_ADMIN' || currentUser.username === post.authorUsername);
+                const canDeletePost = currentUser && currentUser.role === 'SUPER_ADMIN';
+                const canDeleteComment = currentUser && currentUser.role === 'SUPER_ADMIN';
+                const avatar = getAuthorAvatar(post.authorUsername, post.authorAvatar);
+
+                return `
+                    <article class="glass-card rounded-2xl overflow-hidden shadow-xl transition duration-300">
+                        <div class="p-5 border-b border-slate-700/50 flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg md:text-xl font-bold text-slate-100 mb-2">${escapeHtml(post.title)}</h3>
+                                <div class="flex items-center space-x-2 text-xs text-slate-400">
+                                    <span>Posted by</span>
+                                    <div class="flex items-center space-x-1.5 cursor-pointer" onclick="viewLargeImage('${escapeHtml(avatar)}')">
+                                        ${avatar ? `
+                                            <img src="${escapeHtml(avatar)}" alt="${escapeHtml(post.authorName)}" class="w-6 h-6 rounded-full object-cover border border-indigo-400 hover:scale-110 transition shadow">
+                                        ` : `
+                                            <i class="fa-solid fa-circle-user text-indigo-400 text-base"></i>
+                                        `}
+                                        <span class="font-bold text-indigo-300">${escapeHtml(post.authorName)}</span>
+                                    </div>
+                                    <span>•</span>
+                                    <span class="text-slate-400">${formatTimeAgo(post.timestamp)}</span>
+                                </div>
+                            </div>
+
+                            ${(canEdit || canDeletePost) ? `
+                                <div class="flex items-center space-x-1">
+                                    ${canEdit ? `
+                                        <button onclick="openEditPost('${post.id}')" class="text-slate-400 hover:text-indigo-400 p-2 rounded-xl hover:bg-slate-800/80 transition">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    ` : ''}
+                                    ${canDeletePost ? `
+                                        <button onclick="deletePost('${post.id}')" class="text-slate-400 hover:text-rose-400 p-2 rounded-xl hover:bg-slate-800/80 transition">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${post.imageUrl ? `
+                            <div class="w-full max-h-96 bg-slate-950/60 overflow-hidden cursor-pointer" onclick="viewLargeImage('${escapeHtml(post.imageUrl)}')">
+                                <img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                            </div>
+                        ` : ''}
+
+                        <div class="p-5 text-slate-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                            ${escapeHtml(post.content)}
+                        </div>
+
+                        <div class="px-5 py-3 bg-slate-900/60 border-t border-b border-slate-800 flex items-center justify-between text-xs md:text-sm">
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-2 text-rose-400 hover:text-rose-300 font-semibold px-3 py-1.5 rounded-full hover:bg-rose-950/40 transition">
+                                <i class="fa-solid fa-heart text-base"></i>
+                                <span>${post.likes || 0}</span>
+                            </button>
+                            <span class="text-slate-400 font-medium">
+                                <i class="fa-regular fa-comment mr-1"></i> ${countTotalComments(post)} টি মন্তব্য
+                            </span>
+                        </div>
+
+                        <div class="p-5 bg-slate-950/40 space-y-4">
+                            <form onsubmit="handleAddComment(event, '${post.id}')" class="flex flex-wrap md:flex-nowrap gap-2">
+                                <input type="text" name="commenterName" value="${escapeHtml(savedCommenterName)}" required placeholder="আপনার নাম" class="w-full md:w-1/3 px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <input type="text" name="commentText" required placeholder="একটি সুন্দর মন্তব্য লিখুন..." class="flex-grow px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <button type="submit" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-4 py-2 rounded-xl font-medium transition neon-glow-btn">
+                                    মন্তব্য
+                                </button>
+                            </form>
+
+                            <div class="space-y-3 mt-4">
+                                ${(post.comments && post.comments.length > 0) ? post.comments.map(c => `
+                                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 text-xs md:text-sm">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="font-bold text-indigo-300">${escapeHtml(c.name)}</span>
+                                                <span class="text-slate-500 text-[10px] ml-2">${formatTimeAgo(c.timestamp)}</span>
+                                                <p class="text-slate-300 mt-1">${escapeHtml(c.text)}</p>
+                                            </div>
+                                            ${canDeleteComment ? `
+                                                <button onclick="deleteComment('${post.id}', '${c.id}')" class="text-slate-500 hover:text-rose-400 p-1" title="Delete Comment">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+
+                                        <div class="mt-2 text-right">
+                                            <button onclick="toggleReplyForm('${c.id}')" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1">
+                                                <i class="fa-solid fa-reply"></i> উত্তর দিন
+                                            </button>
+                                        </div>
+
+                                        <form id="replyForm_${c.id}" onsubmit="handleAddReply(event, '${post.id}', '${c.id}')" class="hidden mt-2 pt-2 border-t border-slate-800/80 flex gap-2">
+                                            <input type="text" name="replyName" value="${escapeHtml(savedCommenterName)}" required placeholder="আপনার নাম" class="w-1/3 px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-slate-200">
+                                            <input type="text" name="replyText" required placeholder="উত্তর লিখুন..." class="flex-grow px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-slate-200">
+                                            <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-3 py-1.5 rounded-lg">উত্তর</button>
+                                        </form>
+
+                                        ${(c.replies && c.replies.length > 0) ? `
+                                            <div class="mt-3 pl-4 border-l-2 border-indigo-500/40 space-y-2">
+                                                ${c.replies.map(r => `
+                                                    <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60 flex justify-between items-start">
+                                                        <div>
+                                                            <span class="font-bold text-purple-300 text-xs">${escapeHtml(r.name)}</span>
+                                                            <span class="text-slate-500 text-[10px] ml-2">${formatTimeAgo(r.timestamp)}</span>
+                                                            <p class="text-slate-300 text-xs mt-0.5">${escapeHtml(r.text)}</p>
+                                                        </div>
+                                                        ${canDeleteComment ? `
+                                                            <button onclick="deleteReply('${post.id}', '${c.id}', '${r.id}')" class="text-slate-600 hover:text-rose-400 p-1">
+                                                                <i class="fa-solid fa-xmark text-xs"></i>
+                                                            </button>
+                                                        ` : ''}
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `).join('') : `<p class="text-xs text-slate-500 italic">এখনো কোনো মন্তব্য নেই।</p>`}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function countTotalComments(post) {
+            if (!post.comments) return 0;
+            let total = post.comments.length;
+            post.comments.forEach(c => { if (c.replies) total += c.replies.length; });
+            return total;
+        }
+
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`replyForm_${commentId}`);
+            if (form) form.classList.toggle('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+            const err = document.getElementById('loginError');
+
+            if (u === superAdmin.username && p === superAdmin.password) {
+                currentUser = { role: 'SUPER_ADMIN', username: superAdmin.username, name: superAdmin.name };
+                saveData();
+                closeModal('loginModal');
+                renderNav();
+                renderUserBar();
+                renderPosts();
+                err.classList.add('hidden');
+                document.getElementById('loginForm').reset();
+                return;
+            }
+
+            const sub = subAdmins.find(s => s.username === u && s.password === p);
+            if (sub) {
+                currentUser = { role: 'SUB_ADMIN', username: sub.username, name: sub.name, id: sub.id };
+                saveData();
+                closeModal('loginModal');
+                renderNav();
+                renderUserBar();
+                renderPosts();
+                err.classList.add('hidden');
+                document.getElementById('loginForm').reset();
+                return;
+            }
+
+            err.classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            saveData();
+            renderNav();
+            renderUserBar();
+            renderPosts();
+        }
+
+        async function handlePostSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const editId = document.getElementById('editPostId').value;
+            const title = document.getElementById('postTitle').value.trim();
+            const fileInput = document.getElementById('postImageFile');
+            const content = document.getElementById('postContent').value.trim();
+
+            let imageUrl = '';
+            if (fileInput.files && fileInput.files[0]) {
+                imageUrl = await fileToBase64(fileInput.files[0]);
+            }
+
+            if (editId) {
+                const p = posts.find(item => item.id === editId);
+                if (p) {
+                    p.title = title;
+                    if (imageUrl) p.imageUrl = imageUrl;
+                    p.content = content;
+                }
+            } else {
+                const avatarUrl = currentUser.role === 'SUPER_ADMIN' ? superAdmin.avatar : (subAdmins.find(s => s.id === currentUser.id)?.avatar || '');
+                const newPost = {
+                    id: 'post_' + Date.now(),
+                    title,
+                    imageUrl,
+                    content,
+                    authorName: currentUser.name,
+                    authorUsername: currentUser.username,
+                    authorAvatar: avatarUrl,
+                    timestamp: Date.now(),
+                    likes: 0,
+                    comments: []
+                };
+                posts.unshift(newPost);
+            }
+
+            saveData();
+            closeModal('postModal');
+            renderPosts();
+            document.getElementById('postForm').reset();
+        }
+
+        function openPostModal() {
+            document.getElementById('editPostId').value = '';
+            document.getElementById('postForm').reset();
+            document.getElementById('postModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-400"></i> নতুন পোস্ট লিখুন`;
+            openModal('postModal');
+        }
+
+        function openEditPost(postId) {
+            const p = posts.find(item => item.id === postId);
+            if (!p) return;
+
+            document.getElementById('editPostId').value = p.id;
+            document.getElementById('postTitle').value = p.title;
+            document.getElementById('postContent').value = p.content;
+            document.getElementById('postModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-400"></i> পোস্ট এডিট করুন`;
+            openModal('postModal');
+        }
+
+        function deletePost(postId) {
+            if (!currentUser || currentUser.role !== 'SUPER_ADMIN') return;
+            if (confirm('আপনি কি পোস্টটি মুছে ফেলতে চান?')) {
+                posts = posts.filter(p => p.id !== postId);
+                saveData();
+                renderPosts();
+            }
+        }
+
+        function toggleLike(postId) {
+            const p = posts.find(item => item.id === postId);
+            if (p) {
+                p.likes = (p.likes || 0) + 1;
+                saveData();
+                renderPosts();
+            }
+        }
+
+        function handleAddComment(e, postId) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.commenterName.value.trim();
+            const text = form.commentText.value.trim();
+
+            localStorage.setItem(STORAGE_KEY_SAVED_COMMENTER, name);
+
+            const p = posts.find(item => item.id === postId);
+            if (p) {
+                if (!p.comments) p.comments = [];
+                p.comments.push({
+                    id: 'c_' + Date.now(),
+                    name,
+                    text,
+                    timestamp: Date.now(),
+                    replies: []
+                });
+                saveData();
+                renderPosts();
+            }
+        }
+
+        function handleAddReply(e, postId, commentId) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.replyName.value.trim();
+            const text = form.replyText.value.trim();
+
+            localStorage.setItem(STORAGE_KEY_SAVED_COMMENTER, name);
+
+            const p = posts.find(item => item.id === postId);
+            if (p && p.comments) {
+                const c = p.comments.find(item => item.id === commentId);
+                if (c) {
+                    if (!c.replies) c.replies = [];
+                    c.replies.push({
+                        id: 'r_' + Date.now(),
+                        name,
+                        text,
+                        timestamp: Date.now()
+                    });
+                    saveData();
+                    renderPosts();
+                }
+            }
+        }
+
+        function deleteComment(postId, commentId) {
+            if (!currentUser || currentUser.role !== 'SUPER_ADMIN') return;
+            const p = posts.find(item => item.id === postId);
+            if (p && p.comments) {
+                p.comments = p.comments.filter(c => c.id !== commentId);
+                saveData();
+                renderPosts();
+            }
+        }
+
+        function deleteReply(postId, commentId, replyId) {
+            if (!currentUser || currentUser.role !== 'SUPER_ADMIN') return;
+            const p = posts.find(item => item.id === postId);
+            if (p && p.comments) {
+                const c = p.comments.find(item => item.id === commentId);
+                if (c && c.replies) {
+                    c.replies = c.replies.filter(r => r.id !== replyId);
+                    saveData();
+                    renderPosts();
+                }
+            }
+        }
+
+        function openSubAdminModal() {
+            if (!currentUser || currentUser.role !== 'SUPER_ADMIN') return;
+            renderSubAdminList();
+            openModal('subAdminModal');
+        }
+
+        async function handleCreateSubAdmin(e) {
+            e.preventDefault();
+            const name = document.getElementById('newSubName').value.trim();
+            const username = document.getElementById('newSubUsername').value.trim();
+            const password = document.getElementById('newSubPassword').value.trim();
+            const fileInput = document.getElementById('newSubAvatarFile');
+
+            if (subAdmins.some(s => s.username === username) || username === superAdmin.username) {
+                alert('এই ইউজারনেমটি ইতিপূর্বে ব্যবহৃত হয়েছে!');
+                return;
+            }
+
+            let avatar = '';
+            if (fileInput.files && fileInput.files[0]) {
+                avatar = await fileToBase64(fileInput.files[0]);
+            }
+
+            subAdmins.push({ id: 'sub_' + Date.now(), name, username, password, avatar });
+            saveData();
+            document.getElementById('createSubAdminForm').reset();
+            renderSubAdminList();
+        }
+
+        function renderSubAdminList() {
+            const list = document.getElementById('subAdminList');
+            if (subAdmins.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 py-2">কোনো সাব-অ্যাডমিন নেই।</p>`;
+                return;
+            }
+
+            list.innerHTML = subAdmins.map(sub => `
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex justify-between items-center text-xs">
+                    <div class="flex items-center space-x-2">
+                        ${sub.avatar ? `
+                            <img src="${escapeHtml(sub.avatar)}" class="w-7 h-7 rounded-full object-cover border border-slate-700">
+                        ` : `<i class="fa-solid fa-circle-user text-slate-500 text-lg"></i>`}
+                        <div>
+                            <div class="font-bold text-slate-200">${escapeHtml(sub.name)}</div>
+                            <div class="text-slate-400">User: <strong>${escapeHtml(sub.username)}</strong> | Pass: <strong>${escapeHtml(sub.password)}</strong></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="editSubAdmin('${sub.id}')" class="bg-indigo-950 text-indigo-300 px-2.5 py-1 rounded-lg">এডিট</button>
+                        <button onclick="deleteSubAdmin('${sub.id}')" class="bg-rose-950 text-rose-300 px-2 py-1 rounded-lg">ডিলিট</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editSubAdmin(subId) {
+            const sub = subAdmins.find(s => s.id === subId);
+            if (!sub) return;
+
+            const newName = prompt('নতুন নাম:', sub.name);
+            if (newName === null) return;
+
+            const newUsername = prompt('নতুন ইউজারনেম (Username):', sub.username);
+            if (newUsername === null) return;
+
+            const newPass = prompt('নতুন পাসওয়ার্ড:', sub.password);
+            if (newPass === null) return;
+
+            if (newUsername.trim() !== sub.username && (subAdmins.some(s => s.username === newUsername.trim()) || newUsername.trim() === superAdmin.username)) {
+                alert('ইউজারনেমটি ইতিপূর্বে ব্যবহৃত হয়েছে!');
+                return;
+            }
+
+            if (newName.trim()) sub.name = newName.trim();
+            if (newUsername.trim()) sub.username = newUsername.trim();
+            if (newPass.trim()) sub.password = newPass.trim();
+
+            saveData();
+            renderSubAdminList();
+            renderPosts();
+        }
+
+        function deleteSubAdmin(subId) {
+            if (confirm('সাব-অ্যাডমিন মুছে ফেলতে চান?')) {
+                subAdmins = subAdmins.filter(s => s.id !== subId);
+                saveData();
+                renderSubAdminList();
+            }
+        }
+
+        function openProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('profileName').value = currentUser.name;
+            const usernameField = document.getElementById('profileUsernameField');
+            const usernameInput = document.getElementById('profileUsername');
+
+            if (currentUser.role === 'SUPER_ADMIN') {
+                usernameField.classList.remove('hidden');
+                usernameInput.value = superAdmin.username;
+                document.getElementById('profilePassword').value = superAdmin.password;
+            } else {
+                usernameField.classList.add('hidden');
+                const sub = subAdmins.find(s => s.id === currentUser.id);
+                document.getElementById('profilePassword').value = sub ? sub.password : '';
+            }
+
+            openModal('profileModal');
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const newName = document.getElementById('profileName').value.trim();
+            const newPassword = document.getElementById('profilePassword').value.trim();
+            const fileInput = document.getElementById('profileAvatarFile');
+
+            let newAvatar = '';
+            if (fileInput.files && fileInput.files[0]) {
+                newAvatar = await fileToBase64(fileInput.files[0]);
+            }
+
+            if (currentUser.role === 'SUPER_ADMIN') {
+                const newUsername = document.getElementById('profileUsername').value.trim();
+                if (newUsername !== superAdmin.username && subAdmins.some(s => s.username === newUsername)) {
+                    alert('ইউজারনেমটি ব্যবহৃত হয়েছে!');
+                    return;
+                }
+                superAdmin.name = newName;
+                superAdmin.username = newUsername;
+                if (newAvatar) superAdmin.avatar = newAvatar;
+                superAdmin.password = newPassword;
+
+                currentUser.name = newName;
+                currentUser.username = newUsername;
+            } else {
+                const sub = subAdmins.find(s => s.id === currentUser.id);
+                if (sub) {
+                    sub.name = newName;
+                    if (newAvatar) sub.avatar = newAvatar;
+                    sub.password = newPassword;
+                    currentUser.name = newName;
+                }
+            }
+
+            saveData();
+            closeModal('profileModal');
+            renderUserBar();
+            renderPosts();
+            alert('প্রোফাইল আপডেট হয়েছে!');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function formatTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (seconds < 60) return 'এইমাত্র';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} মিনিট আগে`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} ঘণ্টা আগে`;
+            const days = Math.floor(hours / 24);
+            return `${days} দিন আগে`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
